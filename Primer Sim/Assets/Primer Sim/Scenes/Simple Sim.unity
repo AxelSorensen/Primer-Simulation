@@ -393,15 +393,15 @@ MonoBehaviour:
   blobAmount: 9
   foodAmount: 100
   timeScale: 10
-  foodPrefab: {fileID: 177729052936832368, guid: 7703dd97ac1ef0a40bb2b4dbe543a927,
-    type: 3}
+  foodBoundDecreaser: 2
+  blobBoundDecreaser: 0
   blueblobPrefab: {fileID: 592221394447461641, guid: c56a92fec14c96546a0b257228bb11df,
     type: 3}
   redblobPrefab: {fileID: 2254049309785799508, guid: 6c005271964fc8c42b4e5a3380a282ee,
     type: 3}
   ground: {fileID: 774994424}
-  foodBoundDecreaser: 2
-  blobBoundDecreaser: 0
+  foodPrefab: {fileID: 177729052936832368, guid: 7703dd97ac1ef0a40bb2b4dbe543a927,
+    type: 3}
   count: {fileID: 1242184557}
   simNum: {fileID: 1307174604}
 --- !u!4 &1217642984
