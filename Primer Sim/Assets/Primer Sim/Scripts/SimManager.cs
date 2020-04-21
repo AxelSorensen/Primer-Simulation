@@ -5,21 +5,22 @@ using TMPro;
 
 public class SimManager : MonoBehaviour
 {
+    [Header("Sim Settings")]
     public int blobAmount;
     public int foodAmount;
     public int timeScale;
-    public GameObject foodPrefab;
+    // These variables control how far out on the plane, the blobs and foods are spawned
+    public float foodBoundDecreaser;
+    public float blobBoundDecreaser;
 
+    [Header("Prefabs")]
     //Blue blobs have a speed of 10
     public GameObject blueblobPrefab;
     //Blue blobs have a speed of 20
     public GameObject redblobPrefab;
     public GameObject ground;
+    public GameObject foodPrefab;
 
-    // These variables control how far out on the plane, the blobs and foods are spawned
-    public float foodBoundDecreaser;
-    public float blobBoundDecreaser;
-  
     public TextMeshPro count;
     public TextMeshPro simNum;
 
