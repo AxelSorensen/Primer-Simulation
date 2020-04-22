@@ -5,7 +5,13 @@ I have watched multiple of Primer's videoes on evolution and have wanted to crea
 After searching the web far and wide, I haven't been able to find out how to mimic these simulations.
 So I decided to figure it out myself.
 
+Follow my progress here and @axel_sorensen on Twitter, were I will be posting most of my updates
+
 *I am by no means an experienced programmer, so any comments or ideas to optimize the code and reduce repetition, are very welcome*
+
+**RUNNING THE SIMULATION:**
+
+To run the simulation you just need to, copy the Primer Sim folder to your computer, open the unity project and press play!
 
 **THE SIMULATION**
 
@@ -22,10 +28,6 @@ So far I have a simple simulation that starts of with 10 blobs and 100 foods on 
 In this version I instantiate 9 blue blobs and 1 red blob. The red blob's speed is twice the blue blob's.
 After around 10 cycles of the simulation, the red blobs have completely taken over the population.
 Speed is a valuable trait in this environment!
-
-**RUNNING THE SIMULATION:**
-
-To run the simulation you just need to open the unity project and press play!
 
 **SIM MANAGER:**
 
