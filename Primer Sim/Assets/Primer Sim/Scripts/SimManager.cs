@@ -16,10 +16,10 @@ public class SimManager : MonoBehaviour
     [Header("Prefabs")]
     //Blue blobs have a speed of 10
     public GameObject blueblobPrefab;
-    //Blue blobs have a speed of 20
-    public GameObject redblobPrefab;
     public GameObject ground;
     public GameObject foodPrefab;
+
+    GameObject blobParent;
 
     public TextMeshPro count;
     public TextMeshPro simNum;
@@ -27,17 +27,19 @@ public class SimManager : MonoBehaviour
     int simNumber = 0;
     float bounds;
 
-    List<int> counts = new List<int>();
+    public GameObject graph;
+
+    public List<int> counts = new List<int>();
     // This list is used to keep track of blobs being added and removed from the simulation
     List<GameObject> blobs = new List<GameObject>();
     Vector3 spawnPos;
 
     void Awake()
     {
+        blobParent = GameObject.Find("[blobs]");
         bounds = (ground.transform.lossyScale.x * 10) / 2 - blobBoundDecreaser;
         // For some reason I have to manually reference the 4 walls in script, otherwise the blobs get lost
         blueblobPrefab.GetComponent<Blob>().walls = GameObject.FindGameObjectsWithTag("wall");
-        redblobPrefab.GetComponent<Blob>().walls = GameObject.FindGameObjectsWithTag("wall");
     }
 
     // Start is called before the first frame update
@@ -84,13 +86,12 @@ public class SimManager : MonoBehaviour
             blobs.Add(blob);
 
         }
-        // This code instantiates the red blob in a predefined position and adds it too blobs aswell
-        GameObject redblob = (GameObject)Instantiate(redblobPrefab, new Vector3(-bounds,1,4), Quaternion.identity);
-        blobs.Add(redblob);
 
         // Now the setup is done! This while loop will cause the following code to be repeated.
         while (true)
         {
+            counts.Add(blobs.Count);
+            graph.GetComponent<WindowGraph>().ShowGraph(counts);
             // This code displays the current amount of blobs and the sim number.
             count.text = "Blobs: " + blobs.Count.ToString();
             simNumber++;
@@ -138,24 +139,26 @@ public class SimManager : MonoBehaviour
 
             yield return new WaitForSeconds(2);
            
-            // Instantiating a new blob for every blob with 2 eaten foods. The if statement is repetitive but decides whether to reproduce a blue or a red blob base on the blob that is reproducing.
+            // Instantiating a new blob for every blob with 2 eaten foods.
             foreach (GameObject blob in blobs.ToArray())
             {
                 if (blob.GetComponent<Blob>().eatenFood > 1)
                 {
-                    if (blob.name == "Blob(Clone)")
-                    {
-                        GameObject newblob = (GameObject)Instantiate(blueblobPrefab, blob.transform.position, Quaternion.identity);
-                        newblob.GetComponent<Blob>().isHome = true;
-                        blobs.Add(newblob);
-                    }
-                    else
-                    {
-                        GameObject newblob = (GameObject)Instantiate(redblobPrefab, blob.transform.position, Quaternion.identity);
-                        newblob.GetComponent<Blob>().isHome = true;
-                        blobs.Add(newblob);
-                    }
-                    
+                    GameObject newblob = (GameObject)Instantiate(blueblobPrefab, blob.transform.position, Quaternion.identity);
+                    //newblob.GetComponent<Blob>().speed = blob.GetComponent<Blob>().speed;
+                    //if (Random.value < 0.1f)
+                    //{
+                    //    if (Random.value > 0.5f)
+                    //    {
+                    //        newblob.GetComponent<Blob>().speed -= 0.1f;
+                    //    }
+                    //    else
+                    //    {
+                    //        newblob.GetComponent<Blob>().speed += 0.1f;
+                    //    }
+                    //}
+                    newblob.GetComponent<Blob>().isHome = true;
+                    blobs.Add(newblob);
                 }
             }
 

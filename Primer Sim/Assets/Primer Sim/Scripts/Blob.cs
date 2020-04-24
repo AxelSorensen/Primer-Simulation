@@ -6,7 +6,7 @@ public class Blob : MonoBehaviour
 {
     //Declaring all the variables that will be used
     Rigidbody rb;
-    public int speed;
+    public float speed;
     public float senseRadius;
     public LayerMask foodLayer;
     public CreatureAction currentAction;
@@ -16,26 +16,29 @@ public class Blob : MonoBehaviour
     public bool isHome = false;
     public int energyLoss;
     public float energyToGetBack;
-
     bool goingHome = false;
+    float blobHue = 0.575f; //Hue value for blue
    
     Vector3 closestPoint;
     GameObject nearestFood;
-
+    Renderer blobRenderer;
 
     // Start is called before the first frame update
     void Start()
     {
+        blobRenderer = GetComponent<Renderer>();
         rb = GetComponent<Rigidbody>();
         // Starts the creature action on None
         currentAction = CreatureAction.None;
         // Decreases energy with 1 every 10th of a second
         InvokeRepeating("Energy", 0f, 0.1f);
+
     }
 
     // Update is called once per frame
     void Update()
     {
+        blobRenderer.material.color = Color.HSVToRGB(blobHue * speed, 1, 1);
         ClosestPoint();
         VisibleFood();
         Act();
@@ -99,7 +102,7 @@ public class Blob : MonoBehaviour
             rb.isKinematic = false;
         }
         // The blob moves foward (relative to its own rotation) at a constant speed
-        rb.velocity = transform.forward * speed;
+        rb.velocity = transform.forward * speed * 10;
 
         // There is a 10% chance that the blob will change direction
         if (Random.value < .05f)
@@ -131,7 +134,7 @@ public class Blob : MonoBehaviour
         if (nearestFood != null)
         {
             // Sets the velocity equal to a direction vector pointing to nearestFood, multiplied by speed
-            rb.velocity = (nearestFood.transform.position - transform.position).normalized * speed;
+            rb.velocity = (nearestFood.transform.position - transform.position).normalized * speed * 10;
         }
         else
         {
@@ -152,7 +155,7 @@ public class Blob : MonoBehaviour
     {
         if (energy > 0)
         {
-            rb.velocity = (closestPoint - transform.position).normalized * speed;
+            rb.velocity = (closestPoint - transform.position).normalized * speed * 10;
             isHome = true;
             Debug.DrawLine(closestPoint, transform.position, Color.red);
         }
