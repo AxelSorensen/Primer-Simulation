@@ -4,23 +4,25 @@ using UnityEngine;
 
 public class MeshFill : MonoBehaviour
 {
+    public Material[] mat;
     Mesh mesh;
     public GameObject meshPrefab;
 
-    public void CreateShape(Vector2 dotA, Vector2 dotB)
+    public void CreateShape(Vector2 dotA, Vector2 dotB, int matIndex, float offset)
     {
 
         Vector3[] dotsToVerts = new Vector3[]
 {
-            new Vector3(dotA.x,0,0),
-            new Vector3(dotA.x,dotA.y,0),
-            new Vector3(dotB.x,0,0),
-            new Vector3(dotB.x,dotB.y,0)
+            new Vector3(dotA.x,0,offset),
+            new Vector3(dotA.x,dotA.y,offset),
+            new Vector3(dotB.x,0,offset),
+            new Vector3(dotB.x,dotB.y,offset)
 };
 
         GameObject meshObject = Instantiate(meshPrefab, transform);
         mesh = new Mesh();
         meshObject.GetComponent<MeshFilter>().mesh = mesh;
+        meshObject.GetComponent<Renderer>().material = mat[matIndex];
 
         mesh.Clear();
 

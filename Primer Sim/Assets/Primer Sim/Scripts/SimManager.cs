@@ -16,6 +16,7 @@ public class SimManager : MonoBehaviour
     [Header("Prefabs")]
     //Blue blobs have a speed of 10
     public GameObject blueblobPrefab;
+    public GameObject redblobPrefab;
     public GameObject ground;
     public GameObject foodPrefab;
 
@@ -29,9 +30,11 @@ public class SimManager : MonoBehaviour
 
     public GameObject graph;
 
-    public List<int> counts = new List<int>();
+    public List<int> blueCount = new List<int>();
+    public List<int> redCount = new List<int>();
     // This list is used to keep track of blobs being added and removed from the simulation
     List<GameObject> blobs = new List<GameObject>();
+    List<GameObject> redBlobs = new List<GameObject>();
     Vector3 spawnPos;
 
     void Awake()
@@ -40,6 +43,7 @@ public class SimManager : MonoBehaviour
         bounds = (ground.transform.lossyScale.x * 10) / 2 - blobBoundDecreaser;
         // For some reason I have to manually reference the 4 walls in script, otherwise the blobs get lost
         blueblobPrefab.GetComponent<Blob>().walls = GameObject.FindGameObjectsWithTag("wall");
+        redblobPrefab.GetComponent<Blob>().walls = GameObject.FindGameObjectsWithTag("wall");
     }
 
     // Start is called before the first frame update
@@ -86,12 +90,25 @@ public class SimManager : MonoBehaviour
             blobs.Add(blob);
 
         }
+        // This code instantiates the red blob in a predefined position and adds it too blobs aswell
+        GameObject redblob = (GameObject)Instantiate(redblobPrefab, new Vector3(4, 1, -bounds), Quaternion.identity);
+        blobs.Add(redblob);
+        redBlobs.Add(redblob);
 
         // Now the setup is done! This while loop will cause the following code to be repeated.
         while (true)
         {
-            counts.Add(blobs.Count);
-            graph.GetComponent<WindowGraph>().ShowGraph(counts);
+
+            if (!(blobs.Count - redBlobs.Count <= 0))
+            {
+                blueCount.Add(blobs.Count - redBlobs.Count);
+            }
+            else
+            {
+                blueCount.Add(0);
+            }
+            redCount.Add(redBlobs.Count);
+            graph.GetComponent<WindowGraph>().ShowGraph(blueCount, redCount);
             // This code displays the current amount of blobs and the sim number.
             count.text = "Blobs: " + blobs.Count.ToString();
             simNumber++;
@@ -132,19 +149,40 @@ public class SimManager : MonoBehaviour
             {
                 if (blob.GetComponent<Blob>().currentAction == CreatureAction.OutOfEnergy)
                 {
-                    blobs.Remove(blob);
-                    Destroy(blob.gameObject);
+                    if (blob.name == "BlueBlob(Clone)")
+                    {
+                        blobs.Remove(blob);
+                        Destroy(blob.gameObject);
+                    }
+                    else
+                    {
+                        blobs.Remove(blob);
+                        redBlobs.Remove(blob);
+                        Destroy(blob.gameObject);
+                    }
                 }
             }
 
             yield return new WaitForSeconds(2);
-           
+
             // Instantiating a new blob for every blob with 2 eaten foods.
             foreach (GameObject blob in blobs.ToArray())
             {
                 if (blob.GetComponent<Blob>().eatenFood > 1)
                 {
-                    GameObject newblob = (GameObject)Instantiate(blueblobPrefab, blob.transform.position, Quaternion.identity);
+                    if (blob.name == "BlueBlob(Clone)")
+                    {
+                        GameObject newblob = (GameObject)Instantiate(blueblobPrefab, blob.transform.position, Quaternion.identity);
+                        newblob.GetComponent<Blob>().isHome = true;
+                        blobs.Add(newblob);
+                    }
+                    else
+                    {
+                        GameObject newblob = (GameObject)Instantiate(redblobPrefab, blob.transform.position, Quaternion.identity);
+                        newblob.GetComponent<Blob>().isHome = true;
+                        blobs.Add(newblob);
+                        redBlobs.Add(newblob);
+                    }
                     //newblob.GetComponent<Blob>().speed = blob.GetComponent<Blob>().speed;
                     //if (Random.value < 0.1f)
                     //{
@@ -157,8 +195,6 @@ public class SimManager : MonoBehaviour
                     //        newblob.GetComponent<Blob>().speed += 0.1f;
                     //    }
                     //}
-                    newblob.GetComponent<Blob>().isHome = true;
-                    blobs.Add(newblob);
                 }
             }
 

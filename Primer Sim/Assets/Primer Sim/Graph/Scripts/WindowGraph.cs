@@ -16,6 +16,9 @@ public class WindowGraph : MonoBehaviour
     public GameObject fill;
     public List<Vector3[]> dotList = new List<Vector3[]>();
 
+    [Header("Graph Settings")]
+    public bool dynamicXAxis;
+
     private void Awake()
     {
         graphContainer = transform.Find("graphContainer").GetComponent<RectTransform>();
@@ -25,11 +28,12 @@ public class WindowGraph : MonoBehaviour
         dashTemplateY = graphContainer.Find("dashTemplateY").GetComponent<RectTransform>();
         circle = graphContainer.Find("circle").GetComponent<RectTransform>();
         List<int> values = new List<int> {5, 40, 20};
+        List<int> values2 = new List<int> { 10, 20, 5 };
         gameObjectList = new List<GameObject>();
-        //ShowGraph(values, (int _i) => "Day "+ (_i+1));
+        ShowGraph(values, values2);
     }
 
-    public void ShowGraph(List<int> valueList, Func<int, string> getAxisLabelX = null, Func<float, string> getAxisLabelY = null)
+    public void ShowGraph(List<int> valueList, List<int> valueList2, Func<int, string> getAxisLabelX = null, Func<float, string> getAxisLabelY = null)
     {
         if (getAxisLabelX == null)
         {
@@ -50,16 +54,20 @@ public class WindowGraph : MonoBehaviour
         float graphHeight = graphContainer.sizeDelta.y;
         float graphWidth = graphContainer.sizeDelta.x;
         float yMaximum = 100f;
-        float xSize = graphWidth / valueList.Count;
-        //float xSize = 50f;
+        float xSize = 60f;
+        if (dynamicXAxis)
+        {
+            xSize = graphWidth / valueList.Count;
+        }
         GameObject lastCircleGameObject = null;
 
         for (int i = 0; i < valueList.Count; i++)
         {
             float xPosition = xSize + i * xSize;
-            float yPosition = (valueList[i] / yMaximum) * graphHeight;
+            float yPosition = (valueList[i]/ yMaximum) * graphHeight;
 
             RectTransform circleGameObject = Instantiate(circle);
+            circleGameObject.sizeDelta = new Vector2(0,0);
             circleGameObject.SetParent(graphContainer, false);
             circleGameObject.gameObject.SetActive(true);
             circleGameObject.anchoredPosition = new Vector2(xPosition, yPosition);
@@ -67,8 +75,34 @@ public class WindowGraph : MonoBehaviour
             gameObjectList.Add(circleGameObject.gameObject);
             if (lastCircleGameObject != null)
             {
-                GameObject dotConnectionGameObject = CreateDotConnection(lastCircleGameObject.GetComponent<RectTransform>().anchoredPosition, circleGameObject.GetComponent<RectTransform>().anchoredPosition);
-                gameObjectList.Add(dotConnectionGameObject);
+                //GameObject dotConnectionGameObject = CreateDotConnection(lastCircleGameObject.GetComponent<RectTransform>().anchoredPosition, circleGameObject.GetComponent<RectTransform>().anchoredPosition);
+                //gameObjectList.Add(dotConnectionGameObject);
+
+                fill.GetComponent<MeshFill>().CreateShape(lastCircleGameObject.GetComponent<RectTransform>().anchoredPosition, circleGameObject.GetComponent<RectTransform>().anchoredPosition, 0, 0);
+            }
+            lastCircleGameObject = circleGameObject.gameObject;
+        }
+
+        lastCircleGameObject = null;
+
+        for (int i = 0; i < valueList.Count; i++)
+        {
+            float xPosition = xSize + i * xSize;
+            float yPosition = ((valueList[i] + valueList2[i]) / yMaximum) * graphHeight;
+
+            RectTransform circleGameObject = Instantiate(circle);
+            circleGameObject.sizeDelta = new Vector2(0, 0);
+            circleGameObject.SetParent(graphContainer, false);
+            circleGameObject.gameObject.SetActive(true);
+            circleGameObject.anchoredPosition = new Vector2(xPosition, yPosition);
+
+            gameObjectList.Add(circleGameObject.gameObject);
+            if (lastCircleGameObject != null)
+            {
+                //GameObject dotConnectionGameObject = CreateDotConnection(lastCircleGameObject.GetComponent<RectTransform>().anchoredPosition, circleGameObject.GetComponent<RectTransform>().anchoredPosition);
+                //gameObjectList.Add(dotConnectionGameObject);
+
+                fill.GetComponent<MeshFill>().CreateShape(lastCircleGameObject.GetComponent<RectTransform>().anchoredPosition, circleGameObject.GetComponent<RectTransform>().anchoredPosition, 1, .1f);
             }
             lastCircleGameObject = circleGameObject.gameObject;
 
@@ -119,8 +153,6 @@ public class WindowGraph : MonoBehaviour
         rectTransform.anchorMax = new Vector2(0, 0);
         rectTransform.anchoredPosition = dotPositionA + dir * distance * .5f;
         rectTransform.localEulerAngles = new Vector3(0, 0, Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg);
-
-        fill.GetComponent<MeshFill>().CreateShape(dotPositionA, dotPositionB);
 
         return gameObject;
 

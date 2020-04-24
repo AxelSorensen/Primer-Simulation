@@ -38,7 +38,7 @@ public class Blob : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        blobRenderer.material.color = Color.HSVToRGB(blobHue * speed, 1, 1);
+        //blobRenderer.material.color = Color.HSVToRGB(blobHue * speed, 1, 1);
         ClosestPoint();
         VisibleFood();
         Act();
