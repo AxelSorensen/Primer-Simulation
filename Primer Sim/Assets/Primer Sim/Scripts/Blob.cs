@@ -183,7 +183,7 @@ public class Blob : MonoBehaviour
         // Then the closest point on that collider is found using .ClosestPoint(blobs position)
         float circleRadius = 30f;
         float nearestDist = Mathf.Infinity;
-        for (float i = 0; i <= 1; i += .1f)
+        for (float i = 0; i <= 1; i += .01f)
         {
             float angle = i * Mathf.PI * 2;
             Vector3 circlePoint = new Vector3(Mathf.Cos(angle), 0, Mathf.Sin(angle)) * circleRadius;

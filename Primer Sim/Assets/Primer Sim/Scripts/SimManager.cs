@@ -33,7 +33,7 @@ public class SimManager : MonoBehaviour
     List<GameObject> blobs = new List<GameObject>();
     List<GameObject> redBlobs = new List<GameObject>();
     Vector3 spawnPos;
-    float circleRadius = 25;
+    float circleRadius = 29;
 
     void Awake()
     {
