@@ -11,7 +11,6 @@ public class Blob : MonoBehaviour
     public LayerMask foodLayer;
     public CreatureAction currentAction;
     public int eatenFood;
-    public GameObject[] walls;
     public int energy = 100;
     public bool isHome = false;
     public int energyLoss;
@@ -169,20 +168,31 @@ public class Blob : MonoBehaviour
     // This function calculates the closest point from the blob to "home" (the outer bounds)
     void ClosestPoint()
     {
-        float nearestDist = Mathf.Infinity;
-        GameObject nearestWall = null;
+        //float nearestdist = Mathf.Infinity;
+        //gameobject nearestwall = null;
 
-        // First the closest wall is found...
-        foreach (var wall in walls)
+        //// first the closest wall is found...
+        //foreach (var wall in walls)
+        //{
+        //    if (vector3.distance(transform.position, wall.transform.position) < nearestdist)
+        //    {
+        //        nearestdist = vector3.distance(transform.position, wall.transform.position);
+        //        nearestwall = wall.gameobject;
+        //    }
+        //}
+        // Then the closest point on that collider is found using .ClosestPoint(blobs position)
+        float circleRadius = 30f;
+        float nearestDist = Mathf.Infinity;
+        for (float i = 0; i <= 1; i += .1f)
         {
-            if (Vector3.Distance(transform.position, wall.transform.position) < nearestDist)
+            float angle = i * Mathf.PI * 2;
+            Vector3 circlePoint = new Vector3(Mathf.Cos(angle), 0, Mathf.Sin(angle)) * circleRadius;
+            if (Vector3.Distance(transform.position, circlePoint) < nearestDist)
             {
-                nearestDist = Vector3.Distance(transform.position, wall.transform.position);
-                nearestWall = wall.gameObject;
+                nearestDist = Vector3.Distance(transform.position, circlePoint);
+                closestPoint = circlePoint;
             }
         }
-        // Then the closest point on that collider is found using .ClosestPoint(blobs position)
-        closestPoint = nearestWall.GetComponent<Collider>().ClosestPoint(transform.position);
         // Then calculate the energy that would be needed to travel that distance
         energyToGetBack = (Vector3.Distance(transform.position, closestPoint) + 5);
     }

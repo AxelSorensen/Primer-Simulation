@@ -20,13 +20,10 @@ public class SimManager : MonoBehaviour
     public GameObject ground;
     public GameObject foodPrefab;
 
-    GameObject blobParent;
-
     public TextMeshPro count;
     public TextMeshPro simNum;
 
     int simNumber = 0;
-    float bounds;
 
     public GameObject graph;
 
@@ -36,14 +33,13 @@ public class SimManager : MonoBehaviour
     List<GameObject> blobs = new List<GameObject>();
     List<GameObject> redBlobs = new List<GameObject>();
     Vector3 spawnPos;
+    float circleRadius = 25;
 
     void Awake()
     {
-        blobParent = GameObject.Find("[blobs]");
-        bounds = (ground.transform.lossyScale.x * 10) / 2 - blobBoundDecreaser;
         // For some reason I have to manually reference the 4 walls in script, otherwise the blobs get lost
-        blueblobPrefab.GetComponent<Blob>().walls = GameObject.FindGameObjectsWithTag("wall");
-        redblobPrefab.GetComponent<Blob>().walls = GameObject.FindGameObjectsWithTag("wall");
+        //blueblobPrefab.GetComponent<Blob>().ringWall = GameObject.FindGameObjectWithTag("wallsphere");
+        //redblobPrefab.GetComponent<Blob>().ringWall = GameObject.FindGameObjectWithTag("wallsphere");
     }
 
     // Start is called before the first frame update
@@ -64,34 +60,35 @@ public class SimManager : MonoBehaviour
         // This whole for loop just determines a random vector position in the outer bounds of the plane
         for (int i = 0; i < blobAmount; i++)
         {
-            spawnPos.y = 1;
-            int randomNumber = Random.Range(1, 5);
-            switch (randomNumber)
-            {
-                case 1:
-                    spawnPos.x = bounds;
-                    spawnPos.z = Random.Range(-bounds, bounds);
-                    break;
-                case 2:
-                    spawnPos.x = -bounds;
-                    spawnPos.z = Random.Range(-bounds, bounds);
-                    break;
-                case 3:
-                    spawnPos.x = Random.Range(-bounds, bounds);
-                    spawnPos.z = bounds;
-                    break;
-                case 4:
-                    spawnPos.x = Random.Range(-bounds, bounds);
-                    spawnPos.z = -bounds;
-                    break;
-            }
+            //spawnPos.y = 0;
+            //int randomNumber = Random.Range(1, 5);
+            //switch (randomNumber)
+            //{
+            //    case 1:
+            //        spawnPos.x = bounds;
+            //        spawnPos.z = Random.Range(-bounds, bounds);
+            //        break;
+            //    case 2:
+            //        spawnPos.x = -bounds;
+            //        spawnPos.z = Random.Range(-bounds, bounds);
+            //        break;
+            //    case 3:
+            //        spawnPos.x = Random.Range(-bounds, bounds);
+            //        spawnPos.z = bounds;
+            //        break;
+            //    case 4:
+            //        spawnPos.x = Random.Range(-bounds, bounds);
+            //        spawnPos.z = -bounds;
+            //        break;
+            //}
             // Instantiating a blob at the randomized position and adds it to the blob list
-            GameObject blob = (GameObject)Instantiate(blueblobPrefab, spawnPos, Quaternion.identity);
+
+            GameObject blob = (GameObject)Instantiate(blueblobPrefab, SpawnPos(), Quaternion.identity);
             blobs.Add(blob);
 
         }
         // This code instantiates the red blob in a predefined position and adds it too blobs aswell
-        GameObject redblob = (GameObject)Instantiate(redblobPrefab, new Vector3(4, 1, -bounds), Quaternion.identity);
+        GameObject redblob = (GameObject)Instantiate(redblobPrefab, SpawnPos(), Quaternion.identity);
         blobs.Add(redblob);
         redBlobs.Add(redblob);
 
@@ -117,7 +114,7 @@ public class SimManager : MonoBehaviour
             // This code instantiated the food on the plane
             for (int i = 0; i < foodAmount; i++)
             {
-                spawnPos = Random.insideUnitSphere * (bounds - foodBoundDecreaser);
+                spawnPos = Random.insideUnitSphere * (circleRadius - foodBoundDecreaser);
                 spawnPos.y = .25f;
                 GameObject food = (GameObject)Instantiate(foodPrefab, spawnPos, Quaternion.identity);
             }
@@ -200,5 +197,13 @@ public class SimManager : MonoBehaviour
 
         }
 
+    }
+
+    Vector3 SpawnPos()
+    {
+        float angle = Random.value * Mathf.PI * 2;
+
+        spawnPos = new Vector3(Mathf.Cos(angle), 0, Mathf.Sin(angle)) * circleRadius;
+        return spawnPos;
     }
 }
