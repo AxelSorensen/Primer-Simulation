@@ -9,7 +9,7 @@ public class Food : MonoBehaviour
     // I had to detect the collision from the food gameobject, since multiple blobs were colliding with 1 food at once (and all got a point).
     // I am controlling the blobs current action and foodEaten from this script.
     // And using !wasEaten to only let a food collide with something once
-    void OnCollisionEnter(Collision other)
+    void OnTriggerEnter(Collider other)
     {
         if (!wasEaten)
         {

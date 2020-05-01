@@ -27,23 +27,23 @@ public class WindowGraph : MonoBehaviour
         dashTemplateX = graphContainer.Find("dashTemplateX").GetComponent<RectTransform>();
         dashTemplateY = graphContainer.Find("dashTemplateY").GetComponent<RectTransform>();
         circle = graphContainer.Find("circle").GetComponent<RectTransform>();
-        List<int> values = new List<int> {5, 40, 20};
+        List<int> values = new List<int> { (int)(0.9 * 10), 40, 20 };
         List<int> values2 = new List<int> { 10, 20, 5 };
         gameObjectList = new List<GameObject>();
-        ShowGraph(values, values2);
+        ShowGraph(values);
     }
 
-    public void ShowGraph(List<int> valueList, List<int> valueList2, Func<int, string> getAxisLabelX = null, Func<float, string> getAxisLabelY = null)
+    public void ShowGraph(List<int> valueList, Func<int, string> getAxisLabelX = null, Func<float, string> getAxisLabelY = null)
     {
         if (getAxisLabelX == null)
         {
-            getAxisLabelX = delegate (int _i) { return _i.ToString(); };
+            getAxisLabelX = delegate (int _i) { return (_i / 10f).ToString("0.0"); };
         }
         if (getAxisLabelY == null)
         {
             getAxisLabelY = delegate (float _f) { return Mathf.RoundToInt(_f).ToString(); };
         }
-        foreach(GameObject gameObject in gameObjectList)
+        foreach (GameObject gameObject in gameObjectList)
         {
             Destroy(gameObject);
         }
@@ -54,62 +54,63 @@ public class WindowGraph : MonoBehaviour
         float graphHeight = graphContainer.sizeDelta.y;
         float graphWidth = graphContainer.sizeDelta.x;
         float yMaximum = 100f;
-        float xSize = 60f;
+        float xSize = 30f;
         if (dynamicXAxis)
         {
             xSize = graphWidth / valueList.Count;
         }
-        GameObject lastCircleGameObject = null;
+        //GameObject lastCircleGameObject = null;
 
         for (int i = 0; i < valueList.Count; i++)
         {
             float xPosition = xSize + i * xSize;
-            float yPosition = (valueList[i]/ yMaximum) * graphHeight;
+            float yPosition = (valueList[i] / yMaximum) * graphHeight;
+            GameObject barGameObject = CreateBar(new Vector2(xPosition, yPosition), xSize * .9f, i);
+            gameObjectList.Add(barGameObject);
+            //    RectTransform circleGameObject = Instantiate(circle);
+            //    circleGameObject.sizeDelta = new Vector2(0,0);
+            //    circleGameObject.SetParent(graphContainer, false);
+            //    circleGameObject.gameObject.SetActive(true);
+            //    circleGameObject.anchoredPosition = new Vector2(xPosition, yPosition);
 
-            RectTransform circleGameObject = Instantiate(circle);
-            circleGameObject.sizeDelta = new Vector2(0,0);
-            circleGameObject.SetParent(graphContainer, false);
-            circleGameObject.gameObject.SetActive(true);
-            circleGameObject.anchoredPosition = new Vector2(xPosition, yPosition);
+            //    gameObjectList.Add(circleGameObject.gameObject);
+            //    if (lastCircleGameObject != null)
+            //    {
+            //        //GameObject dotConnectionGameObject = CreateDotConnection(lastCircleGameObject.GetComponent<RectTransform>().anchoredPosition, circleGameObject.GetComponent<RectTransform>().anchoredPosition);
+            //        //gameObjectList.Add(dotConnectionGameObject);
 
-            gameObjectList.Add(circleGameObject.gameObject);
-            if (lastCircleGameObject != null)
-            {
-                //GameObject dotConnectionGameObject = CreateDotConnection(lastCircleGameObject.GetComponent<RectTransform>().anchoredPosition, circleGameObject.GetComponent<RectTransform>().anchoredPosition);
-                //gameObjectList.Add(dotConnectionGameObject);
+            //        fill.GetComponent<MeshFill>().CreateShape(lastCircleGameObject.GetComponent<RectTransform>().anchoredPosition, circleGameObject.GetComponent<RectTransform>().anchoredPosition, 0, 0);
+            //    }
+            //    lastCircleGameObject = circleGameObject.gameObject;
+            //}
 
-                fill.GetComponent<MeshFill>().CreateShape(lastCircleGameObject.GetComponent<RectTransform>().anchoredPosition, circleGameObject.GetComponent<RectTransform>().anchoredPosition, 0, 0);
-            }
-            lastCircleGameObject = circleGameObject.gameObject;
-        }
+            //lastCircleGameObject = null;
 
-        lastCircleGameObject = null;
+            //for (int i = 0; i < valueList.Count; i++)
+            //{
+            //    float xPosition = xSize + i * xSize;
+            //    float yPosition = ((valueList[i] + valueList2[i]) / yMaximum) * graphHeight;
 
-        for (int i = 0; i < valueList.Count; i++)
-        {
-            float xPosition = xSize + i * xSize;
-            float yPosition = ((valueList[i] + valueList2[i]) / yMaximum) * graphHeight;
+            //    RectTransform circleGameObject = Instantiate(circle);
+            //    circleGameObject.sizeDelta = new Vector2(0, 0);
+            //    circleGameObject.SetParent(graphContainer, false);
+            //    circleGameObject.gameObject.SetActive(true);
+            //    circleGameObject.anchoredPosition = new Vector2(xPosition, yPosition);
 
-            RectTransform circleGameObject = Instantiate(circle);
-            circleGameObject.sizeDelta = new Vector2(0, 0);
-            circleGameObject.SetParent(graphContainer, false);
-            circleGameObject.gameObject.SetActive(true);
-            circleGameObject.anchoredPosition = new Vector2(xPosition, yPosition);
+            //    gameObjectList.Add(circleGameObject.gameObject);
+            //    if (lastCircleGameObject != null)
+            //    {
+            //        //GameObject dotConnectionGameObject = CreateDotConnection(lastCircleGameObject.GetComponent<RectTransform>().anchoredPosition, circleGameObject.GetComponent<RectTransform>().anchoredPosition);
+            //        //gameObjectList.Add(dotConnectionGameObject);
 
-            gameObjectList.Add(circleGameObject.gameObject);
-            if (lastCircleGameObject != null)
-            {
-                //GameObject dotConnectionGameObject = CreateDotConnection(lastCircleGameObject.GetComponent<RectTransform>().anchoredPosition, circleGameObject.GetComponent<RectTransform>().anchoredPosition);
-                //gameObjectList.Add(dotConnectionGameObject);
-
-                fill.GetComponent<MeshFill>().CreateShape(lastCircleGameObject.GetComponent<RectTransform>().anchoredPosition, circleGameObject.GetComponent<RectTransform>().anchoredPosition, 1, .1f);
-            }
-            lastCircleGameObject = circleGameObject.gameObject;
+            //        fill.GetComponent<MeshFill>().CreateShape(lastCircleGameObject.GetComponent<RectTransform>().anchoredPosition, circleGameObject.GetComponent<RectTransform>().anchoredPosition, 1, .1f);
+            //    }
+            //    lastCircleGameObject = circleGameObject.gameObject;
 
             RectTransform labelX = Instantiate(labelTemplateX);
             labelX.SetParent(graphContainer, false);
             labelX.gameObject.SetActive(true);
-            labelX.anchoredPosition = new Vector2(xPosition, -5f);
+            labelX.anchoredPosition = new Vector2(xPosition + xSize / 2, -5f);
             labelX.GetComponent<Text>().text = getAxisLabelX(i);
             gameObjectList.Add(labelX.gameObject);
 
@@ -155,7 +156,20 @@ public class WindowGraph : MonoBehaviour
         rectTransform.localEulerAngles = new Vector3(0, 0, Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg);
 
         return gameObject;
+    }
 
-        
+    private GameObject CreateBar(Vector2 graphPosition, float barWidth, int colorIndex)
+    {
+        GameObject gameObject = new GameObject("bar", typeof(Image));
+        gameObject.transform.SetParent(graphContainer, false);
+        gameObject.GetComponent<Image>().color = Color.HSVToRGB(0.575f * (colorIndex / 10f) / 3 + 0.40f, 1, 1);
+        RectTransform rectTransform = gameObject.GetComponent<RectTransform>();
+        rectTransform.anchoredPosition = new Vector2(graphPosition.x, 0f);
+        rectTransform.sizeDelta = new Vector2(barWidth, graphPosition.y);
+        rectTransform.anchorMin = new Vector2(0, 0);
+        rectTransform.anchorMax = new Vector2(0, 0);
+        rectTransform.pivot = new Vector2(0f, 0f);
+        return gameObject;
     }
 }
+

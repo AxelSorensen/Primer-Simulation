@@ -6,18 +6,22 @@ public class Blob : MonoBehaviour
 {
     //Declaring all the variables that will be used
     Rigidbody rb;
-    public float speed;
+    public int speed = 10;
     public float senseRadius;
     public LayerMask foodLayer;
     public CreatureAction currentAction;
     public int eatenFood;
-    public int energy = 100;
+    public float energy = 100;
     public bool isHome = false;
-    public int energyLoss;
     public float energyToGetBack;
-    bool goingHome = false;
+    public bool goingHome = false;
     float blobHue = 0.575f; //Hue value for blue
-   
+    public bool startRot = false;
+
+    public bool simStart;
+
+    public GameObject[] walls;
+
     Vector3 closestPoint;
     GameObject nearestFood;
     Renderer blobRenderer;
@@ -25,22 +29,29 @@ public class Blob : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        //senseRadius = (senseRadius / speed);
         blobRenderer = GetComponent<Renderer>();
+        blobRenderer.material.color = Color.HSVToRGB((blobHue * (speed / 10f) / 3 + 0.40f), 1, 1);
         rb = GetComponent<Rigidbody>();
         // Starts the creature action on None
         currentAction = CreatureAction.None;
         // Decreases energy with 1 every 10th of a second
-        InvokeRepeating("Energy", 0f, 0.1f);
-
+        InvokeRepeating("Energy", 0f, .1f);
     }
 
-    // Update is called once per frame
     void Update()
     {
-        //blobRenderer.material.color = Color.HSVToRGB(blobHue * speed, 1, 1);
         ClosestPoint();
         VisibleFood();
-        Act();
+    }
+    // Update is called once per frame
+    void FixedUpdate()
+    {
+        if (simStart)
+        {
+            Act();
+            EnergyCheck();
+        }
     }
 
     // This function controls all the blob's actions with a switch statement.
@@ -49,7 +60,7 @@ public class Blob : MonoBehaviour
         switch (currentAction)
         {
             case CreatureAction.None:
-                rb.isKinematic = true;
+                ZeroVelocity();
                 break;
             case CreatureAction.Exploring:
                 Explore();
@@ -64,12 +75,12 @@ public class Blob : MonoBehaviour
                 GoHome();
                 break;
             case CreatureAction.IsHome:
-                rb.isKinematic = true;
+                ZeroVelocity();
                 break;
             case CreatureAction.OutOfEnergy:
-                rb.isKinematic = true;
+                ZeroVelocity();
                 break;
-            
+
         }
     }
 
@@ -95,35 +106,19 @@ public class Blob : MonoBehaviour
     // This function controls the movement of the Blob
     void Explore()
     {
-        // Sets kinematic to false
-        if (rb.isKinematic)
-        {
-            rb.isKinematic = false;
-        }
-        // The blob moves foward (relative to its own rotation) at a constant speed
-        rb.velocity = transform.forward * speed * 10;
 
+        // The blob moves foward (relative to its own rotation) at a constant speed
+        rb.velocity = transform.forward * speed;
         // There is a 10% chance that the blob will change direction
+
         if (Random.value < .05f)
         {
-            rb.transform.Rotate(new Vector3(0, Random.Range(-100, 100), 0));
+            rb.transform.Rotate(new Vector3(0, Random.Range(-45, 45), 0));
         }
         // If there is food within senseRadius, change creature action
         if (nearestFood != null)
         {
             currentAction = CreatureAction.GoingToFood;
-        }
-
-        if (isHome)
-        {
-            currentAction = CreatureAction.IsHome;
-        }
-
-        // This if statement makes the blob go home if it already and just barely has enough energy to get back
-        if (!goingHome && eatenFood > 0 && energy <= energyToGetBack)
-        {
-            goingHome = true;
-            currentAction = CreatureAction.GoingHome;
         }
     }
 
@@ -133,7 +128,8 @@ public class Blob : MonoBehaviour
         if (nearestFood != null)
         {
             // Sets the velocity equal to a direction vector pointing to nearestFood, multiplied by speed
-            rb.velocity = (nearestFood.transform.position - transform.position).normalized * speed * 10;
+            transform.LookAt(new Vector3(nearestFood.transform.position.x, transform.position.y, nearestFood.transform.position.z));
+            rb.velocity = (nearestFood.transform.position - transform.position).normalized * speed;
         }
         else
         {
@@ -144,65 +140,54 @@ public class Blob : MonoBehaviour
     // This function turns the blob around 180 degrees and then going back to exploring
     void HitWall()
     {
-        rb.angularVelocity = Vector3.zero;
-        transform.Rotate(new Vector3(0, 180, 0));
-        currentAction = CreatureAction.Exploring;
+        if (goingHome)
+        {
+            isHome = true;
+            currentAction = CreatureAction.IsHome;
+        }
+        else
+        {
+            transform.Rotate(new Vector3(0, 180, 0));
+            currentAction = CreatureAction.Exploring;
+        }
     }
 
     // This function makes the blob take the shortest route home
     void GoHome()
     {
-        if (energy > 0)
-        {
-            rb.velocity = (closestPoint - transform.position).normalized * speed * 10;
-            isHome = true;
-            Debug.DrawLine(closestPoint, transform.position, Color.red);
-        }
-        else
-        {
-            currentAction = CreatureAction.OutOfEnergy;
-        }
-
+        goingHome = true;
+        transform.LookAt(new Vector3(closestPoint.x, transform.position.y, closestPoint.z));
+        rb.velocity = (closestPoint - transform.position).normalized * speed;
+        Debug.DrawLine(closestPoint, transform.position, Color.red);
     }
 
     // This function calculates the closest point from the blob to "home" (the outer bounds)
     void ClosestPoint()
     {
-        //float nearestdist = Mathf.Infinity;
-        //gameobject nearestwall = null;
+        float nearestdist = Mathf.Infinity;
+        GameObject nearestwall = null;
 
-        //// first the closest wall is found...
-        //foreach (var wall in walls)
-        //{
-        //    if (vector3.distance(transform.position, wall.transform.position) < nearestdist)
-        //    {
-        //        nearestdist = vector3.distance(transform.position, wall.transform.position);
-        //        nearestwall = wall.gameobject;
-        //    }
-        //}
-        // Then the closest point on that collider is found using .ClosestPoint(blobs position)
-        float circleRadius = 30f;
-        float nearestDist = Mathf.Infinity;
-        for (float i = 0; i <= 1; i += .01f)
+        // First the closest wall is found...
+        foreach (var wall in walls)
         {
-            float angle = i * Mathf.PI * 2;
-            Vector3 circlePoint = new Vector3(Mathf.Cos(angle), 0, Mathf.Sin(angle)) * circleRadius;
-            if (Vector3.Distance(transform.position, circlePoint) < nearestDist)
+            if (Vector3.Distance(transform.position, wall.transform.position) < nearestdist)
             {
-                nearestDist = Vector3.Distance(transform.position, circlePoint);
-                closestPoint = circlePoint;
+                nearestdist = Vector3.Distance(transform.position, wall.transform.position);
+                nearestwall = wall.gameObject;
             }
         }
-        // Then calculate the energy that would be needed to travel that distance
-        energyToGetBack = (Vector3.Distance(transform.position, closestPoint) + 5);
+        // Than Collider.ClosestPoint is used to find the closest point from the blob to the wall
+        closestPoint = nearestwall.GetComponent<Collider>().ClosestPoint(transform.position);
+        energyToGetBack = ((Vector3.Distance(transform.position, closestPoint) * (speed / 10f) * (speed / 10f)) + 1);
     }
 
-    // This function subtracts one from energy and sets the blob's state to "Out of Energy" if it doesn't make it home
+
+    // This function subtracts from energy and sets the blob's state to "Out of Energy" when energy runs out
     void Energy()
     {
         if (energy > 0)
         {
-            energy -= energyLoss;
+            energy -= (speed / 10f) * (speed / 10f);
         }
         else if (!isHome)
         {
@@ -213,10 +198,26 @@ public class Blob : MonoBehaviour
     // This function handles collisions with other objects
     void OnCollisionEnter(Collision other)
     {
-        if (other.gameObject.CompareTag("wall"))
+        if (other.gameObject.CompareTag("wall") && currentAction != CreatureAction.None)
         {
             currentAction = CreatureAction.HitWall;
         }
-        
+
+    }
+
+    // This function sets all velocity to zero
+    void ZeroVelocity()
+    {
+        rb.angularVelocity = Vector3.zero;
+        rb.velocity = Vector3.zero;
+    }
+
+    // This if statement makes the blob go home if it already and just barely has enough energy to get back
+    void EnergyCheck()
+    {
+        if (!goingHome && eatenFood > 0 && energy <= energyToGetBack)
+        {
+            currentAction = CreatureAction.GoingHome;
+        }
     }
 }

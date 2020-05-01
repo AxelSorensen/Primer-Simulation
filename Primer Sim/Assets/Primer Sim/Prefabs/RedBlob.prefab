@@ -125,14 +125,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: acc0da9f2221ebf408fd87f789c1e5b3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 2
+  speed: 60
   senseRadius: 5
   foodLayer:
     serializedVersion: 2
     m_Bits: 512
-  currentAction: 0
+  currentAction: 1
   eatenFood: 0
   energy: 100
   isHome: 0
-  energyLoss: 2
   energyToGetBack: 0
+  goingHome: 0
