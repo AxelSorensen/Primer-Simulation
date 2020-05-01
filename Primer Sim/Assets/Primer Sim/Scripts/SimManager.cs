@@ -26,7 +26,6 @@ public class SimManager : MonoBehaviour
     public GameObject blueblobPrefab;
     public GameObject ground;
     public GameObject foodPrefab;
-
     public TextMeshPro count;
     public TextMeshPro simNum;
 
@@ -35,39 +34,32 @@ public class SimManager : MonoBehaviour
     int zeroEaten;
     int oneEatenNotHome;
     int twoEatenNotHome;
-
-    float bounds;
-
     int simNumber = 0;
 
+    float bounds;
+    float foodBounds;
     public GameObject graph;
+    Vector3 spawnPos;
 
-    public List<int> blueCount = new List<int>();
-    public List<int> redCount = new List<int>();
     // This list is used to keep track of blobs being added and removed from the simulation
     List<GameObject> blobs = new List<GameObject>();
-    List<GameObject> redBlobs = new List<GameObject>();
     List<int> histogram = new List<int>();
-    Vector3 spawnPos;
-    float circleRadius = 29;
 
-    float fixedTime;
 
     void Awake()
     {
 
         // For some reason I have to manually reference the 4 walls in script, otherwise the blobs get lost
         blueblobPrefab.GetComponent<Blob>().walls = GameObject.FindGameObjectsWithTag("wall");
-        //redblobPrefab.GetComponent<Blob>().ringWall = GameObject.FindGameObjectWithTag("wallsphere");
     }
 
     // Start is called before the first frame update
     void Start()
     {
+
         bounds = (ground.transform.lossyScale.x * 10) / 2 - blobBoundDecreaser;
-        //this.fixedTime = Time.fixedDeltaTime;
+        foodBounds = (ground.transform.lossyScale.x * 10) / 2 - foodBoundDecreaser;
         Time.timeScale = timeScale;
-        //Time.fixedDeltaTime = this.fixedTime * Time.timeScale;
         // I use a coroutine so I can execute functions with pauses inbetween
         StartCoroutine("Setup");
     }
@@ -106,18 +98,16 @@ public class SimManager : MonoBehaviour
             // Instantiating a blob at the randomized position and adds it to the blob list
 
             GameObject blob = (GameObject)Instantiate(blueblobPrefab, spawnPos, Quaternion.identity);
+            blob.transform.LookAt(new Vector3(0, transform.position.y, 0));
             blobs.Add(blob);
 
         }
-        // This code instantiates the red blob in a predefined position and adds it too blobs aswell
-        //GameObject redblob = (GameObject)Instantiate(redblobPrefab, SpawnPos(), Quaternion.identity);
-        //blobs.Add(redblob);
-        //redBlobs.Add(redblob);
 
         // Now the setup is done! This while loop will cause the following code to be repeated.
 
         while (true)
         {
+            //Data about blobs placeholders
             endBlobs.text = "End blobs: " + "...";
             oneEatenHomeText.text = "Blobs home with 1 foods: " + "...";
             twoEatenHomeText.text = "Blobs home with 2 foods: " + "...";
@@ -126,6 +116,7 @@ public class SimManager : MonoBehaviour
             twoEatenNotHomeText.text = "Blobs out with 2 foods: " + "...";
             blobsAdded.text = "Blobs added: " + "...";
 
+            //A histogram list to add into the showgraph function
             for (int i = 0; i <= 100; i++)
             {
                 histogram.Add(0);
@@ -136,16 +127,6 @@ public class SimManager : MonoBehaviour
                 histogram[blob.GetComponent<Blob>().speed] += 1;
             }
 
-
-            //if (!(blobs.Count - redBlobs.Count <= 0))
-            //{
-            //    blueCount.Add(blobs.Count - redBlobs.Count);
-            //}
-            //else
-            //{
-            //    blueCount.Add(0);
-            //}
-            //redCount.Add(redBlobs.Count);
             graph.GetComponent<WindowGraph>().ShowGraph(histogram);
             histogram.Clear();
             // This code displays the current amount of blobs and the sim number.
@@ -156,13 +137,9 @@ public class SimManager : MonoBehaviour
             // This code instantiated the food on the plane
             for (int i = 0; i < foodAmount; i++)
             {
-                spawnPos = new Vector3(Random.Range(-bounds, bounds), .25f, Random.Range(-bounds, bounds));
+                spawnPos = new Vector3(Random.Range(-foodBounds, foodBounds), .25f, Random.Range(-foodBounds, foodBounds));
                 GameObject food = (GameObject)Instantiate(foodPrefab, spawnPos, Quaternion.identity);
             }
-            //if(foodAmount > 10)
-            //{
-            //    foodAmount--;
-            //}
 
             yield return new WaitForSeconds(2f);
             // When everything is ready, all the blobs are reset and their current action is set to Exploring
@@ -178,7 +155,7 @@ public class SimManager : MonoBehaviour
                 blob.GetComponent<Blob>().energy = 100;
 
             }
-            // It takes 10 seconds for the blobs energy to go from 100 to 0. So we wait for 10 seconds before proceeding.
+            // Waiting the amount of time that the slowest blob in the sim takes to loose its energy
             float slowestSpeed = Mathf.Infinity;
             foreach (GameObject blob in blobs)
             {
@@ -197,6 +174,7 @@ public class SimManager : MonoBehaviour
                 Destroy(food);
             }
 
+            //Counting blobs
             oneEatenHome = 0;
             twoEatenHome = 0;
             zeroEaten = 0;
@@ -228,6 +206,7 @@ public class SimManager : MonoBehaviour
                 }
             }
 
+            // Displaying info on amount of blobs
             oneEatenHomeText.text = "Blobs home with 1 foods: " + oneEatenHome.ToString();
             twoEatenHomeText.text = "Blobs home with 2 foods: " + twoEatenHome.ToString();
             zeroEatenText.text = "Blobs with 0 foods: " + zeroEaten.ToString();
@@ -272,18 +251,9 @@ public class SimManager : MonoBehaviour
                     }
                 }
             }
-
             endBlobs.text = "End blobs: " + blobs.Count.ToString();
             yield return new WaitForSeconds(.1f);
         }
 
-    }
-
-    Vector3 SpawnPos()
-    {
-        float angle = Random.value * Mathf.PI * 2;
-
-        spawnPos = new Vector3(Mathf.Cos(angle), 0, Mathf.Sin(angle)) * (circleRadius - blobBoundDecreaser);
-        return spawnPos;
     }
 }
