@@ -117,7 +117,7 @@ public class SimManager : MonoBehaviour
             blobsAdded.text = "Blobs added: " + "...";
 
             //A histogram list to add into the showgraph function
-            for (int i = 0; i <= 100; i++)
+            for (int i = 0; i <= 50; i++)
             {
                 histogram.Add(0);
             }
@@ -164,7 +164,6 @@ public class SimManager : MonoBehaviour
                     slowestSpeed = blob.GetComponent<Blob>().speed / 10f;
                 }
             }
-            Debug.Log(10f / (slowestSpeed * slowestSpeed));
             yield return new WaitForSeconds(10f / (slowestSpeed * slowestSpeed) + 1f);
             GameObject[] foods = GameObject.FindGameObjectsWithTag("food");
 
@@ -238,7 +237,7 @@ public class SimManager : MonoBehaviour
                     blobs.Add(newblob);
 
                     newblob.GetComponent<Blob>().speed = blob.GetComponent<Blob>().speed;
-                    if (Random.value < 1f)
+                    if (Random.value < .5f)
                     {
                         if (Random.value > 0.5f)
                         {

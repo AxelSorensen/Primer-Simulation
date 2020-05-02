@@ -60,7 +60,7 @@ public class Blob : MonoBehaviour
         switch (currentAction)
         {
             case CreatureAction.None:
-                IsKinematic();
+                ZeroVelocity();
                 break;
             case CreatureAction.Exploring:
                 Explore();
@@ -75,10 +75,10 @@ public class Blob : MonoBehaviour
                 GoHome();
                 break;
             case CreatureAction.IsHome:
-                IsKinematic();
+                ZeroVelocity();
                 break;
             case CreatureAction.OutOfEnergy:
-                IsKinematic();
+                ZeroVelocity();
                 break;
 
         }
@@ -106,10 +106,6 @@ public class Blob : MonoBehaviour
     // This function controls the movement of the Blob
     void Explore()
     {
-        if (rb.isKinematic)
-        {
-            rb.isKinematic = false;
-        }
 
         // The blob moves foward (relative to its own rotation) at a constant speed
         rb.velocity = transform.forward * speed;
@@ -144,6 +140,9 @@ public class Blob : MonoBehaviour
     // This function turns the blob around 180 degrees and then going back to exploring
     void HitWall()
     {
+        rb.velocity = Vector3.zero;
+        rb.angularVelocity = Vector3.zero;
+
         if (goingHome)
         {
             isHome = true;
@@ -210,9 +209,10 @@ public class Blob : MonoBehaviour
     }
 
     // This function sets all velocity to zero
-    void IsKinematic()
+    void ZeroVelocity()
     {
-        rb.isKinematic = true;
+        rb.velocity = Vector3.zero;
+        rb.angularVelocity = Vector3.zero;
     }
 
     // This if statement makes the blob go home if it already and just barely has enough energy to get back
