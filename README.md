@@ -15,21 +15,23 @@ To run the simulation you just need to, copy the Primer Sim folder to your compu
 
 **THE SIMULATION**
 
-So far I have a simple simulation that starts of with 10 blobs and 100 foods on a simple plane.
-
-- Each blob starts at 100% energy and looses 1% every tenth of a second. The blob stops moving when energy hits 0%
+- Each blob starts at 100% energy and looses energy based on their speed every tenth of a second (faster blobs loose energy faster). 
+The blob stops moving when energy hits 0%
 - Everyday the blobs move randomly around the plane looking for food. 
 - When a food item enters the blobs sense radius the blob will move towards the food and eat it.
 - If a blob is out of energy or doesnt return home with the food, it is destroyed
 - If a blob returns home with 1 food, it will live on to the next day. If a blob returns home with 2 foods it will live and replicate.
+- A blobs offspring has a 50% chance of being slightly faster or slower than the parent blob.
 - Repeat!
 
 **Sidenote:**
-In this version I instantiate 9 blue blobs and 1 red blob. The red blob's speed is twice the blue blob's.
-After around 10 cycles of the simulation, the red blobs have completely taken over the population.
-Speed is a valuable trait in this environment!
+All blobs start with a speed of 10 and the distribution of blobs with different speeds is shown on the distribution chart. 
+Faster blobs can get to food faster but also have less time to look for food.
+From what I understand the chart should form somewhat of a normal distribution around the most adventageous speed.
+At the moment the distribution starts out looking right, and moving up towards higher speeds, but then it start to look random.
 
 **SIM MANAGER:**
+(has been changed a bit, but still has the same controls)
 
 The gameobject "Sim Manager" makes it possible to control simulation variables from the inspector window:
 
