@@ -1,57 +1,74 @@
-# Primer-Simulation
-A project to replicate and build upon the simulations shown in Primer's evolution series, in Unity.
+# 🦠 Primer Simulation
+Evolution simulations in Unity, inspired by Primer's evolution videos — because after searching the web far and wide, nobody had actually written up how to build these.
 
-I have watched multiple of Primer's videoes on evolution and have wanted to create my own simulations inspired by his work. 
-After searching the web far and wide, I haven't been able to find out how to mimic these simulations.
-So I decided to figure it out myself.
+*I am by no means an experienced programmer — comments and ideas on optimizing the code are very welcome.*
 
-Follow my progress here and @axel_sorensen on Twitter, were I will be posting most of my updates
+## Features
+- 🧬 Natural selection, live — 10 blobs and 100 foods on a plane, playing out survival of the fittest in real time
+- ⚡ Traits that matter — one blob is twice as fast as the rest; watch speed take over the gene pool in ~10 cycles
+- 🎛️ Sim Manager — tweak blob count, food count, time scale, and spawn bounds from the inspector, no code required
+- 🖱️ Just press play — no setup beyond opening the project
 
-*I am by no means an experienced programmer, so any comments or ideas to optimize the code and reduce repetition, are very welcome*
+## Installation
+```
+git clone <this repo>
+cd "Primer Sim"
+```
+Open the folder in Unity (built on 2019.3.7f1).
 
-**RUNNING THE SIMULATION:**
+## Usage
+Press ▶️ Play in the Unity editor.
 
-To run the simulation you just need to, copy the Primer Sim folder to your computer, open the unity project and press play!
+That's the whole simulation:
 
-**THE SIMULATION**
+Each blob starts at 100% energy, losing 1% every tenth of a second — hit 0% and it stops moving.
+Every day, blobs wander randomly until food enters their sense radius, then head straight for it.
+Out of energy, or fail to make it home with food → destroyed.
+Home with 1 food → survives to next day. Home with 2 → survives and replicates.
+Repeat!
 
-So far I have a simple simulation that starts of with 10 blobs and 100 foods on a simple plane.
+## Example
+The default scene seeds 9 blue blobs and 1 red blob — the red one moves twice as fast. After ~10 cycles:
 
-- Each blob starts at 100% energy and looses 1% every tenth of a second. The blob stops moving when energy hits 0%
-- Everyday the blobs move randomly around the plane looking for food. 
-- When a food item enters the blobs sense radius the blob will move towards the food and eat it.
-- If a blob is out of energy or doesnt return home with the food, it is destroyed
-- If a blob returns home with 1 food, it will live on to the next day. If a blob returns home with 2 foods it will live and replicate.
-- Repeat!
+Day 1:  ●●●●●●●●● ○          (9 blue, 1 red)
+Day 5:  ●●●●●○○○○ ○          (red lineage spreading)
+Day 10: ○○○○○○○○○ ○          (red has taken over)
 
-**Sidenote:**
-In this version I instantiate 9 blue blobs and 1 red blob. The red blob's speed is twice the blue blob's.
-After around 10 cycles of the simulation, the red blobs have completely taken over the population.
-Speed is a valuable trait in this environment!
+Speed is a wildly valuable trait in this environment.
 
-**SIM MANAGER:**
-
-The gameobject "Sim Manager" makes it possible to control simulation variables from the inspector window:
+Select Sim Manager in the hierarchy to tune it yourself:
 
 <img src="Images/SimManager.jpg">
 
-- Blob Amount - controls the starting amount of blobs on the plane (refering to the amount of blue blobs, since the red one is hardcoded).
-- Food Amount - controls the amount of food instantiated each day.
-- Time Scale - controls how fast the simulation runs (default is 1 and if you go much higher than 10 the physics get wacked out).
-- Food Bound Decreaser - controls how far from the edges the food is spawned.
-- Blob Bound Decreaser - controls how far from the edges the blobs are spawned.
+| Field | Controls |
+|---|---|
+| Blob Amount | Starting number of blue blobs (red is hardcoded) |
+| Food Amount | Food instantiated each day |
+| Time Scale | Simulation speed (things get physics-wacky above ~10) |
+| Food Bound Decreaser | How far from the edges food spawns |
+| Blob Bound Decreaser | How far from the edges blobs spawn |
 
-**FUTURE WORK:**
+## Demo
+**Simulation running**
 
-I will continue working on different kinds of simulations. I hope to throw mutations into the mix and graph the blobs to find the most adventageous traits in the given environment.
+<img src="Images/primer-demo.gif">
 
-I hope you can get something out of this! I will be updating the github with new additions and changes.
+**Speed mutation taking over the population**
 
-If you guys have any questions or want a further explanation of the code, let me know! If enough people ask I will make a video explaining some of the key points.
+<img src="Images/primer-speed-mutations.gif">
 
-There is still a lot I need to learn and I hope to get there with your help!
+**Which traits win?**
 
-Best Regards, 
+<img src="Images/primer-which-traits-win.gif">
+
+## Built with
+- Unity 2019.3.7f1
+- C#
+
+## Status
+🚧 Early and evolving (pun intended) — next up is mutations, plus graphing blob traits to see what actually wins out in a given environment.
+
+Questions, ideas, or want a video walkthrough of the code? Open an issue, or find me @axel_sorensen on Twitter, where I post progress updates.
+
+Best regards,
 Axel Sorensen
-
-
