@@ -66,7 +66,7 @@ Select Sim Manager in the hierarchy to tune it yourself:
 - C#
 
 ## Status
-🚧 Early and evolving (pun intended) — next up is mutations, plus graphing blob traits to see what actually wins out in a given environment.
+**Inactive.** This project is not currently maintained. Existing code works but there are no planned updates.
 
 Questions, ideas, or want a video walkthrough of the code? Open an issue, or find me @axel_sorensen on Twitter, where I post progress updates.
 
