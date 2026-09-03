@@ -66,7 +66,7 @@ Select Sim Manager in the hierarchy to tune it yourself:
 - C#
 
 ## Status
-**Inactive.** This project is not currently maintained. Existing code works but there are no planned updates.
+⚠️ **Inactive, unverified in CI.** This project is not currently maintained and there are no planned updates. Project structure (`Assets/`, `Packages/`, `ProjectSettings/`) is intact and matches the Unity 2019.3.7f1 layout described above, but Unity Editor isn't available in this environment, so opening the project and pressing Play could not be verified directly as of 2026-09-03.
 
 Questions, ideas, or want a video walkthrough of the code? Open an issue, or find me @axel_sorensen on Twitter, where I post progress updates.
 
